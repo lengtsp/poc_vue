@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart.js Preview</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Chart.js Preview</h1>
+        <textarea v-model="chartCode" rows="10" cols="50" placeholder="Enter Chart.js configuration here"></textarea>
+        <br>
+        <button @click="previewChart">Preview Chart</button>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                chartCode: '',
+                chart: null
+            },
+            methods: {
+                previewChart() {
+                    if (this.chart) {
+                        this.chart.destroy();
+                    }
+                    
+                    try {
+                        let config;
+                        if (this.chartCode.trim().startsWith('{')) {
+                            // Attempt to parse as JSON
+                            config = JSON.parse(this.chartCode);
+                        } else {
+                            // Attempt to evaluate as JavaScript
+                            config = eval('(' + this.chartCode + ')');
+                        }
+                        const ctx = document.getElementById('myChart').getContext('2d');
+                        this.chart = new Chart(ctx, config);
+                    } catch (error) {
+                        alert('Error in chart configuration: ' + error.message);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
